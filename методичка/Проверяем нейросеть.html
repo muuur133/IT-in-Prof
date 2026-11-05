@@ -1,0 +1,381 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Проверяем нейросеть</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Лёгкая светлая палитра: тёплый белый фон, яркие акценты, тёмные чернила для текста */
+:root {
+  --bg: #FFFBF2;
+  --paper: #FFFFFF;
+  --ink: #1E2340;
+  --muted: #5A6080;
+  --coral: #FF6B5B;
+  --sky: #2FA8F0;
+  --sun: #FFC93C;
+  --mint: #22C48A;
+  --violet: #8B6CFF;
+  --line: #EDE6D8;
+  --coral-soft: #FFE6E2;
+  --sky-soft: #E0F2FD;
+  --sun-soft: #FFF4CC;
+  --mint-soft: #DDF7EC;
+  --violet-soft: #EEE9FF;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 880px; margin: 0 auto; padding-block: 28px 64px; display: flex; flex-direction: column; gap: 28px; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(36px, 8vw, 60px); font-weight: 900; letter-spacing: -0.02em; }
+h2 { font-size: clamp(26px, 5vw, 34px); font-weight: 900; }
+h3 { font-size: 20px; font-weight: 900; }
+p { margin: 0; }
+code, .mono { font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 0.92em; }
+pre { margin: 0; overflow-x: auto; }
+.lead { font-size: 20px; color: var(--muted); max-width: 60ch; }
+
+/* Hero */
+.hero { display: flex; flex-direction: column; gap: 18px; padding-top: 12px; }
+.hero .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.tag { display: inline-block; padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 15px; }
+.t-coral { background: var(--coral-soft); color: #B63A2E; }
+.t-sky { background: var(--sky-soft); color: #0B6FA8; }
+.t-sun { background: var(--sun-soft); color: #8A6100; }
+.t-mint { background: var(--mint-soft); color: #0B7A52; }
+.t-violet { background: var(--violet-soft); color: #5330D6; }
+
+/* Panels */
+.panel { background: var(--paper); border: 2px solid var(--line); border-radius: 24px; padding: clamp(20px, 4vw, 32px); display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.panel-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.badge {
+  flex: none; width: 58px; height: 58px; border-radius: 18px;
+  display: grid; place-items: center;
+  font-weight: 900; font-size: 24px; color: #fff;
+}
+.b-coral { background: var(--coral); }
+.b-sky { background: var(--sky); }
+.b-sun { background: var(--sun); color: var(--ink); }
+.b-mint { background: var(--mint); }
+.b-violet { background: var(--violet); }
+.kicker { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+/* Rule block */
+.rule { background: var(--sun-soft); border-color: #FFE08A; }
+.rule-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
+.rule-list li { background: var(--paper); border-radius: 14px; padding: 12px 14px; font-weight: 700; }
+.questions { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; counter-reset: q; }
+.questions li { counter-increment: q; display: flex; gap: 12px; align-items: center; font-weight: 700; font-size: 18px; }
+.questions li::before {
+  content: counter(q); flex: none; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 900;
+}
+
+/* Term cards */
+.terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.term { border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.term h3 { font-size: 19px; }
+.term p { font-size: 16px; }
+.term .eg { font-weight: 700; font-size: 15px; background: rgba(255,255,255,0.7); border-radius: 10px; padding: 8px 10px; }
+
+/* Checklists */
+.checks { display: grid; gap: 10px; list-style: none; padding: 0; margin: 0; }
+.checks label {
+  display: flex; gap: 12px; align-items: flex-start; cursor: pointer;
+  background: var(--bg); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px;
+  font-weight: 700; min-width: 0;
+}
+.checks input { flex: none; width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--mint); }
+.checks input:checked + span { text-decoration: line-through; color: var(--muted); }
+.checks span { min-width: 0; }
+
+/* Good / bad */
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.bad, .good { border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.bad { background: var(--coral-soft); }
+.good { background: var(--mint-soft); }
+.bad .label, .good .label { font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; }
+.bad .label { color: #B63A2E; }
+.good .label { color: #0B7A52; }
+
+/* API */
+.methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.method { background: var(--paper); border: 2px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.verb { align-self: flex-start; font-weight: 900; font-size: 15px; padding: 4px 12px; border-radius: 8px; color: #fff; }
+.v-get { background: var(--sky); }
+.v-post { background: var(--mint); }
+.v-patch { background: var(--sun); color: var(--ink); }
+.v-delete { background: var(--coral); }
+.codebox { background: var(--ink); color: #F5F7FF; border-radius: 16px; padding: 16px 18px; }
+.codebox .line { display: block; padding: 4px 0; }
+.codebox .note { color: #9FB3FF; }
+
+/* Markdown files */
+.files { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.file { border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.file .name { font-family: "JetBrains Mono", ui-monospace, monospace; font-weight: 500; font-size: 17px; }
+
+/* Steps */
+.steps { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; background: var(--bg); border-radius: 14px; padding: 10px 12px; font-weight: 700; }
+.steps li::before {
+  content: counter(s); width: 40px; height: 40px; border-radius: 12px; background: var(--sky); color: #fff;
+  display: grid; place-items: center; font-weight: 900;
+}
+
+/* Backlog board */
+.board { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.col { border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.col h3 { font-size: 17px; }
+.card { background: var(--paper); border-radius: 12px; padding: 10px 12px; font-weight: 700; font-size: 15px; box-shadow: 0 1px 0 rgba(30,35,64,0.08); }
+
+/* Flow */
+.flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.flow .step { background: var(--paper); border: 2px solid var(--line); border-radius: 999px; padding: 8px 16px; font-weight: 800; font-size: 16px; }
+.flow .arrow { font-weight: 900; color: var(--violet); font-size: 20px; }
+.example { background: var(--violet-soft); border-radius: 16px; padding: 16px 18px; font-size: 16px; }
+
+footer { text-align: center; font-weight: 700; color: var(--muted); padding-top: 8px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel { transition: transform 0.2s ease; }
+  .panel:hover { transform: translateY(-2px); }
+}
+</style>
+
+<main class="wrap">
+
+<header class="hero">
+  <div class="chips">
+    <span class="tag t-coral">Лабы 1–4</span>
+    <span class="tag t-sky">Для всех, кто не знает терминов</span>
+  </div>
+  <h1>Проверяем нейросеть</h1>
+  <p class="lead">Нейросеть пишет черновик. Ответ становится правильным только после твоей проверки. Ниже всё по шагам: что проверять, как и чем доказать.</p>
+</header>
+
+<section class="panel rule">
+  <div class="panel-head">
+    <div class="badge b-sun">!</div>
+    <div>
+      <div class="kicker">Главное правило</div>
+      <h2>Нейросеть — помощник, не учитель</h2>
+    </div>
+  </div>
+  <p>Она может:</p>
+  <ul class="rule-list">
+    <li>пропустить часть задания</li>
+    <li>придумать команду, которой нет</li>
+    <li>перепутать названия</li>
+    <li>написать код, не совпадающий со схемой</li>
+    <li>написать красивый, но неверный текст</li>
+  </ul>
+  <p><strong>После каждого ответа задай себе три вопроса:</strong></p>
+  <ol class="questions">
+    <li>Всё ли из задания есть в ответе?</li>
+    <li>Нет ли противоречий и явных ошибок?</li>
+    <li>Что я проверил или исправил сам?</li>
+  </ol>
+  <p>Не пиши «всё правильно». Открой задание и сравни ответ с каждым пунктом.</p>
+  <div class="example"><strong>Пример:</strong> в задании «создать четыре таблицы». Ты считаешь таблицы в ответе. Если три, ответ неполный.</div>
+</section>
+
+<!-- ЛАБА 1 -->
+<section class="panel">
+  <div class="panel-head">
+    <div class="badge b-coral">1</div>
+    <div>
+      <div class="kicker">Лабораторная работа</div>
+      <h2>Техническое задание</h2>
+    </div>
+  </div>
+  <p><strong>ТЗ</strong> — описание будущей программы: для кого она, что должна делать и как понять, что она готова. Ты получаешь ТЗ от трёх нейросетей.</p>
+  <p>Проверь каждое ТЗ по вопросам:</p>
+  <ul class="checks">
+    <li><label><input type="checkbox"><span>Понятно, для чего программа?</span></label></li>
+    <li><label><input type="checkbox"><span>Указано, кто будет ею пользоваться?</span></label></li>
+    <li><label><input type="checkbox"><span>Перечислены основные функции?</span></label></li>
+    <li><label><input type="checkbox"><span>Описано, какие данные хранятся?</span></label></li>
+    <li><label><input type="checkbox"><span>Есть требования к безопасности?</span></label></li>
+    <li><label><input type="checkbox"><span>Есть критерии готовности, которые можно проверить?</span></label></li>
+    <li><label><input type="checkbox"><span>Нет ли противоречий?</span></label></li>
+  </ul>
+  <div class="pair">
+    <div class="bad"><span class="label">Плохо</span><p>«Система должна быть удобной». Так не проверишь.</p></div>
+    <div class="good"><span class="label">Хорошо</span><p>«Создать задачу можно не больше чем за три действия». Это проверяется.</p></div>
+  </div>
+  <p>Возле каждой оценки пиши причину: «Полнота — 4. Есть пользователи, задачи и роли, но нет требований к защите данных». Не просто «5».</p>
+</section>
+
+<!-- ЛАБА 2 -->
+<section class="panel">
+  <div class="panel-head">
+    <div class="badge b-sky">2</div>
+    <div>
+      <div class="kicker">Лабораторная работа</div>
+      <h2>База данных, SQL, ER и API</h2>
+    </div>
+  </div>
+  <p>База данных — это хранилище информации. Таблица похожа на таблицу в Excel: <strong>столбец</strong> — поле, <strong>строка</strong> — одна запись.</p>
+
+  <div class="terms">
+    <div class="term t-sky" style="background:var(--sky-soft)">
+      <h3>PRIMARY KEY</h3>
+      <p>Уникальный номер записи. У двух пользователей не может быть одинакового id.</p>
+    </div>
+    <div class="term" style="background:var(--sun-soft)">
+      <h3>FOREIGN KEY</h3>
+      <p>Ссылка на запись в другой таблице.</p>
+      <div class="eg">В задаче есть project_id, по нему видно, к какому проекту она относится.</div>
+    </div>
+    <div class="term" style="background:var(--mint-soft)">
+      <h3>Один ко многим</h3>
+      <p>Один объект связан со многими.</p>
+      <div class="eg">Один проект — много задач. Одна задача — много комментариев.</div>
+    </div>
+    <div class="term" style="background:var(--violet-soft)">
+      <h3>ER-диаграмма</h3>
+      <p>Рисунок таблиц и связей между ними. Должна совпадать с SQL-кодом.</p>
+      <div class="eg">Четыре таблица в коде — четыре на схеме.</div>
+    </div>
+  </div>
+
+  <h3>Проверка SQL-кода</h3>
+  <ul class="checks">
+    <li><label><input type="checkbox"><span>Все четыре таблицы на месте?</span></label></li>
+    <li><label><input type="checkbox"><span>У каждой таблицы есть PRIMARY KEY?</span></label></li>
+    <li><label><input type="checkbox"><span>В tasks есть поля status и priority?</span></label></li>
+    <li><label><input type="checkbox"><span>tasks связана с projects и с users?</span></label></li>
+    <li><label><input type="checkbox"><span>comments связана с tasks и с users?</span></label></li>
+    <li><label><input type="checkbox"><span>Названия полей совпадают в коде и на диаграмме?</span></label></li>
+    <li><label><input type="checkbox"><span>Нет ссылок на таблицы и поля, которых не существует?</span></label></li>
+  </ul>
+  <div class="example"><strong>Пример ошибки:</strong> в comments есть task_id, но внешнего ключа нет. Ты добавляешь FOREIGN KEY, который связывает comments с tasks, и пишешь об этом в отчёте.</div>
+
+  <h3>API: как одна программа говорит с другой</h3>
+  <p><strong>Эндпоинт</strong> — одна конкретная команда API. У неё есть метод, адрес, назначение, данные запроса и ответ.</p>
+  <div class="methods">
+    <div class="method"><span class="verb v-get">GET</span><p><strong>Получить</strong></p><code>GET /tasks</code><p>список задач</p></div>
+    <div class="method"><span class="verb v-post">POST</span><p><strong>Создать</strong></p><code>POST /tasks</code><p>новую задачу</p></div>
+    <div class="method"><span class="verb v-patch">PATCH</span><p><strong>Изменить</strong></p><code>PATCH /tasks/5</code><p>задачу номер 5</p></div>
+    <div class="method"><span class="verb v-delete">DELETE</span><p><strong>Удалить</strong></p><code>DELETE /tasks/5</code><p>задачу номер 5</p></div>
+  </div>
+  <div class="codebox mono">
+    <span class="line"><span class="note"># Создать задачу: отправляем тело запроса</span></span>
+    <span class="line">POST /tasks</span>
+    <span class="line">{ "title": "Нарисовать ER", "status": "todo", "priority": "high" }</span>
+  </div>
+  <ul class="checks">
+    <li><label><input type="checkbox"><span>Метод соответствует действию? Создание — это POST, а не GET.</span></label></li>
+    <li><label><input type="checkbox"><span>Для POST и PATCH указано тело запроса?</span></label></li>
+    <li><label><input type="checkbox"><span>Есть пример ответа?</span></label></li>
+    <li><label><input type="checkbox"><span>Названия полей такие же, как в базе? project_id не должен стать project_name_id.</span></label></li>
+    <li><label><input type="checkbox"><span>Нет эндпоинта для объекта, которого нет в проекте?</span></label></li>
+  </ul>
+</section>
+
+<!-- ЛАБА 3 -->
+<section class="panel">
+  <div class="panel-head">
+    <div class="badge b-mint">3</div>
+    <div>
+      <div class="kicker">Лабораторная работа</div>
+      <h2>Документация в Markdown</h2>
+    </div>
+  </div>
+  <p><strong>Markdown</strong> — обычный текст со служебными символами, которые превращаются в оформление.</p>
+  <div class="terms">
+    <div class="term" style="background:var(--mint-soft)"><h3><span class="mono"># Заголовок</span></h3><p>Знак решётки делает заголовок.</p></div>
+    <div class="term" style="background:var(--mint-soft)"><h3><span class="mono">- пункт</span></h3><p>Дефис делает пункт списка.</p></div>
+    <div class="term" style="background:var(--mint-soft)"><h3><span class="mono">``` код ```</span></h3><p>Три обратные кавычки делают блок кода.</p></div>
+  </div>
+
+  <h3>Какие файлы нужны</h3>
+  <div class="files">
+    <div class="file" style="background:var(--sky-soft)"><span class="name">README.md</span><p>Главная инструкция: что за проект, зачем он, какие технологии, как установить и запустить, где API.</p></div>
+    <div class="file" style="background:var(--sun-soft)"><span class="name">CHANGELOG.md</span><p>История версий: что добавили, изменили, исправили, удалили.</p></div>
+    <div class="file" style="background:var(--violet-soft)"><span class="name">API.md</span><p>Методы, адреса, тела запросов и примеры ответов.</p></div>
+    <div class="file" style="background:var(--coral-soft)"><span class="name">Docstring</span><p>Текст внутри функции: что делает, что принимает, что возвращает.</p></div>
+  </div>
+
+  <h3>Как проверить документ</h3>
+  <ol class="steps">
+    <li>Открой файл в VS Code.</li>
+    <li>Включи предпросмотр.</li>
+    <li>Заголовки, списки и блоки кода должны выглядеть как оформление, а не как значки.</li>
+    <li>Команды установки и запуска должны работать.</li>
+    <li>Названия API и полей сверь с лабой 2.</li>
+  </ol>
+  <div class="example"><strong>Важно:</strong> текст может выглядеть красиво, но с неверной командой запуска он всё равно неверный.</div>
+</section>
+
+<!-- ЛАБА 4 -->
+<section class="panel">
+  <div class="panel-head">
+    <div class="badge b-violet">4</div>
+    <div>
+      <div class="kicker">Лабораторная работа</div>
+      <h2>Трекер задач</h2>
+    </div>
+  </div>
+  <div class="board">
+    <div class="col" style="background:var(--sky-soft)"><h3>Бэклог</h3><div class="card">Все задачи, которые ещё ждут</div></div>
+    <div class="col" style="background:var(--sun-soft)"><h3>Эпик</h3><div class="card">Большая тема: «Проектирование системы»</div></div>
+    <div class="col" style="background:var(--mint-soft)"><h3>Спринт</h3><div class="card">Часть задач на ограниченный срок</div></div>
+    <div class="col" style="background:var(--violet-soft)"><h3>Задача</h3><div class="card">Конкретная работа, которую можно проверить</div></div>
+  </div>
+
+  <h3>Критерии готовности</h3>
+  <div class="pair">
+    <div class="bad"><span class="label">Плохо</span><p>«Работа сделана хорошо». Так не проверишь.</p></div>
+    <div class="good"><span class="label">Хорошо</span><p>Создан файл schema.sql. В базе четыре таблицы. Диаграмма совпадает с кодом. Файл открывается без ошибок.</p></div>
+  </div>
+  <p><strong>Done</strong> значит «выполнено и проверено». Если карточка только создана, в Done её переносить нельзя.</p>
+  <p>Проверь карточку:</p>
+  <ul class="checks">
+    <li><label><input type="checkbox"><span>Понятно из названия, что сделать?</span></label></li>
+    <li><label><input type="checkbox"><span>Есть описание результата, срок и приоритет?</span></label></li>
+    <li><label><input type="checkbox"><span>Выбран спринт?</span></label></li>
+    <li><label><input type="checkbox"><span>Есть минимум три проверяемых критерия?</span></label></li>
+    <li><label><input type="checkbox"><span>Критерии выполнены до переноса в Done?</span></label></li>
+  </ul>
+</section>
+
+<!-- ОТЧЁТ -->
+<section class="panel">
+  <div class="panel-head">
+    <div class="badge b-coral">?</div>
+    <div>
+      <div class="kicker">Как писать отчёт</div>
+      <h2>Формула проверки</h2>
+    </div>
+  </div>
+  <p>Не пиши «я всё проверил, ошибок нет». Пиши, что именно ты сделал.</p>
+  <div class="flow">
+    <span class="step">Действие</span><span class="arrow">→</span>
+    <span class="step">Результат</span><span class="arrow">→</span>
+    <span class="step">Проверка</span><span class="arrow">→</span>
+    <span class="step">Ошибка</span><span class="arrow">→</span>
+    <span class="step">Исправление</span><span class="arrow">→</span>
+    <span class="step">Доказательство</span>
+  </div>
+  <div class="example">
+    <strong>Пример:</strong> «Я попросил нейросеть создать восемь эндпоинтов. При проверке увидел, что создание задачи сделано через GET. Заменил на POST. Исправленная таблица — в таблице 2.1».
+  </div>
+  <p>Если ты не можешь объяснить, что значит код, таблица или термин, эта часть ещё не готова к сдаче.</p>
+</section>
+
+<footer>Проверяй по заданию, а не по впечатлению.</footer>
+
+</main>
+
+</body></html>
